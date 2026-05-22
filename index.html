@@ -1,48 +1,531 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculator App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Calculator App | Saw Jedidiah</title>
 
-<link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-dark: #050816;
+      --card: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --blue: #38bdf8;
+      --purple: #8b5cf6;
+      --green: #22c55e;
+      --red: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.25), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(139, 92, 246, 0.25), transparent 30%),
+        linear-gradient(135deg, #050816, #0f172a 55%, #111827);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    .background-orb {
+      position: fixed;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      filter: blur(20px);
+      opacity: 0.28;
+      animation: float 7s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .orb-one {
+      background: var(--blue);
+      top: 8%;
+      left: 8%;
+    }
+
+    .orb-two {
+      background: var(--purple);
+      right: 8%;
+      bottom: 10%;
+      animation-delay: 1.8s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-22px) scale(1.05);
+      }
+    }
+
+    .app {
+      width: min(1050px, 100%);
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 24px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .intro {
+      padding: 34px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(56, 189, 248, 0.08);
+      color: #7dd3fc;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .intro h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      margin-bottom: 18px;
+    }
+
+    .intro h1 span {
+      background: linear-gradient(90deg, var(--blue), #c084fc);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .intro p {
+      color: #cbd5e1;
+      max-width: 620px;
+      margin-bottom: 22px;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .feature span {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--blue);
+    }
+
+    .calculator {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.075);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 22px;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
+    }
+
+    .calculator-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .calculator-header h2 {
+      font-size: 18px;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #86efac;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    .screen {
+      background: rgba(2, 6, 23, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 18px;
+      min-height: 128px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .previous {
+      min-height: 26px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .current {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 38px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    button {
+      min-height: 62px;
+      border: none;
+      border-radius: 18px;
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: 0.2s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    button:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .operator {
+      background: rgba(37, 99, 235, 0.42);
+      color: #dbeafe;
+    }
+
+    .function {
+      background: rgba(148, 163, 184, 0.16);
+      color: #e2e8f0;
+    }
+
+    .clear {
+      background: rgba(239, 68, 68, 0.35);
+      color: #fee2e2;
+    }
+
+    .equal {
+      grid-column: span 2;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
+    }
+
+    .zero {
+      grid-column: span 2;
+    }
+
+    .history {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(2, 6, 23, 0.38);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .history-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .history-title button {
+      min-height: auto;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #bae6fd;
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    #historyList {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      max-height: 90px;
+      overflow-y: auto;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 15px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .intro {
+        text-align: center;
+      }
+
+      .feature {
+        justify-content: center;
+      }
+
+      .calculator {
+        max-width: 420px;
+        margin: auto;
+      }
+    }
+
+    @media (max-width: 430px) {
+      body {
+        padding: 14px;
+      }
+
+      .intro {
+        padding: 24px;
+      }
+
+      .calculator {
+        padding: 16px;
+        border-radius: 26px;
+      }
+
+      .current {
+        font-size: 32px;
+      }
+
+      button {
+        min-height: 56px;
+        font-size: 17px;
+        border-radius: 16px;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="background-orb orb-one"></div>
+  <div class="background-orb orb-two"></div>
 
-<div class="calculator">
+  <main class="app">
+    <section class="intro">
+      <div class="badge">⚡ Portfolio Project</div>
+      <h1>Modern <span>Calculator</span> App</h1>
+      <p>
+        A responsive calculator built with HTML, CSS, and JavaScript. It includes keyboard support,
+        clean glassmorphism UI, calculation history, and mobile-friendly design.
+      </p>
 
-<input type="text" id="display" readonly>
+      <div class="feature-list">
+        <div class="feature"><span>✓</span> Basic arithmetic operations</div>
+        <div class="feature"><span>✓</span> Keyboard input support</div>
+        <div class="feature"><span>✓</span> Recent calculation history</div>
+        <div class="feature"><span>✓</span> Responsive modern UI design</div>
+      </div>
+    </section>
 
-<div class="buttons">
+    <section class="calculator">
+      <div class="calculator-header">
+        <h2>Calculator</h2>
+        <span class="status">Ready</span>
+      </div>
 
-<button onclick="clearDisplay()">C</button>
-<button onclick="appendValue('/')">/</button>
-<button onclick="appendValue('*')">*</button>
-<button onclick="deleteLast()">⌫</button>
+      <div class="screen">
+        <div class="previous" id="previous"></div>
+        <input class="current" type="text" id="display" value="0" readonly />
+      </div>
 
-<button onclick="appendValue('7')">7</button>
-<button onclick="appendValue('8')">8</button>
-<button onclick="appendValue('9')">9</button>
-<button onclick="appendValue('-')">-</button>
+      <div class="buttons">
+        <button class="clear" onclick="clearDisplay()">AC</button>
+        <button class="function" onclick="deleteLast()">⌫</button>
+        <button class="function" onclick="appendValue('%')">%</button>
+        <button class="operator" onclick="appendValue('/')">÷</button>
 
-<button onclick="appendValue('4')">4</button>
-<button onclick="appendValue('5')">5</button>
-<button onclick="appendValue('6')">6</button>
-<button onclick="appendValue('+')">+</button>
+        <button onclick="appendValue('7')">7</button>
+        <button onclick="appendValue('8')">8</button>
+        <button onclick="appendValue('9')">9</button>
+        <button class="operator" onclick="appendValue('*')">×</button>
 
-<button onclick="appendValue('1')">1</button>
-<button onclick="appendValue('2')">2</button>
-<button onclick="appendValue('3')">3</button>
-<button onclick="calculate()">=</button>
+        <button onclick="appendValue('4')">4</button>
+        <button onclick="appendValue('5')">5</button>
+        <button onclick="appendValue('6')">6</button>
+        <button class="operator" onclick="appendValue('-')">−</button>
 
-<button onclick="appendValue('0')">0</button>
-<button onclick="appendValue('.')">.</button>
+        <button onclick="appendValue('1')">1</button>
+        <button onclick="appendValue('2')">2</button>
+        <button onclick="appendValue('3')">3</button>
+        <button class="operator" onclick="appendValue('+')">+</button>
 
-</div>
+        <button class="zero" onclick="appendValue('0')">0</button>
+        <button onclick="appendValue('.')">.</button>
+        <button class="equal" onclick="calculateResult()">=</button>
+      </div>
 
-</div>
+      <div class="history">
+        <div class="history-title">
+          <span>Recent Calculations</span>
+          <button onclick="clearHistory()">Clear</button>
+        </div>
+        <ul id="historyList">
+          <li>No history yet</li>
+        </ul>
+      </div>
 
-<script src="script.js"></script>
+      <div class="footer">© 2026 Saw Jedidiah</div>
+    </section>
+  </main>
 
+  <script>
+    const display = document.getElementById("display");
+    const previous = document.getElementById("previous");
+    const historyList = document.getElementById("historyList");
+
+    let expression = "";
+    let history = [];
+
+    function updateDisplay() {
+      display.value = expression || "0";
+    }
+
+    function appendValue(value) {
+      const operators = ["+", "-", "*", "/", "%"];
+      const lastChar = expression.slice(-1);
+
+      if (operators.includes(value) && operators.includes(lastChar)) {
+        expression = expression.slice(0, -1) + value;
+      } else {
+        expression += value;
+      }
+
+      updateDisplay();
+    }
+
+    function clearDisplay() {
+      expression = "";
+      previous.textContent = "";
+      updateDisplay();
+    }
+
+    function deleteLast() {
+      expression = expression.slice(0, -1);
+      updateDisplay();
+    }
+
+    function calculateResult() {
+      if (!expression.trim()) return;
+
+      try {
+        const safeExpression = expression.replace(/[^0-9+\-*/%.()]/g, "");
+        const result = Function('"use strict"; return (' + safeExpression + ')')();
+
+        if (!isFinite(result)) {
+          throw new Error("Invalid result");
+        }
+
+        const roundedResult = Number(result.toFixed(10));
+        previous.textContent = expression + " =";
+        addToHistory(expression, roundedResult);
+        expression = String(roundedResult);
+        updateDisplay();
+      } catch {
+        previous.textContent = "Invalid calculation";
+        expression = "";
+        display.value = "Error";
+      }
+    }
+
+    function addToHistory(exp, result) {
+      history.unshift(`${exp} = ${result}`);
+      history = history.slice(0, 5);
+      renderHistory();
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = "";
+
+      if (history.length === 0) {
+        historyList.innerHTML = "<li>No history yet</li>";
+        return;
+      }
+
+      history.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        historyList.appendChild(li);
+      });
+    }
+
+    function clearHistory() {
+      history = [];
+      renderHistory();
+    }
+
+    document.addEventListener("keydown", function(event) {
+      const key = event.key;
+
+      if ((key >= "0" && key <= "9") || ["+", "-", "*", "/", ".", "%", "(", ")"].includes(key)) {
+        appendValue(key);
+      } else if (key === "Enter") {
+        event.preventDefault();
+        calculateResult();
+      } else if (key === "Backspace") {
+        deleteLast();
+      } else if (key === "Escape") {
+        clearDisplay();
+      }
+    });
+  </script>
 </body>
 </html>
